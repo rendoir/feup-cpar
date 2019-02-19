@@ -124,9 +124,8 @@ void OnMultLine(int m_ar, int m_br)
 void blockMultiply()
 {
 	// TODO
-	// This works by line and column instead of line and line
-	// Modify so that it works by line and line
-	// Also, when done, remove all the hardcoded values and add parameters
+	// This only works when the dimensions are multiples of blockSize 
+	// Also, when done, remove all the hardcoded values, add parameters and include PAPI
 
 	int n = 4;
 	int blockSize = 2;
@@ -153,11 +152,11 @@ void blockMultiply()
 	};
 
 	for (int bi = 0; bi < n; bi += blockSize)
-		for (int bj = 0; bj < n; bj += blockSize)
-			for (int bk = 0; bk < n; bk += blockSize)
+		for (int bk = 0; bk < n; bk += blockSize)
+			for (int bj = 0; bj < n; bj += blockSize)
 				for (int i = 0; i < blockSize; i++)
-					for (int j = 0; j < blockSize; j++)
-						for (int k = 0; k < blockSize; k++)
+					for (int k = 0; k < blockSize; k++)
+						for (int j = 0; j < blockSize; j++)
 							c[bi + i][bj + j] += a[bi + i][bk + k] * b[bk + k][bj + j];
 
 	for(int x = 0; x < n; x++) {
