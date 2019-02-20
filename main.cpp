@@ -124,11 +124,10 @@ void OnMultLine(int m_ar, int m_br)
 void blockMultiply()
 {
 	// TODO
-	// This only works when the dimensions are multiples of blockSize 
-	// Also, when done, remove all the hardcoded values, add parameters and include PAPI
+	// Remove all the hardcoded values, add parameters and include PAPI
 
 	int n = 4;
-	int blockSize = 2;
+	int blockSize = 3;
 
 	double a[n][n] = {
 		{5,1,3,10},
@@ -154,9 +153,9 @@ void blockMultiply()
 	for (int bi = 0; bi < n; bi += blockSize)
 		for (int bk = 0; bk < n; bk += blockSize)
 			for (int bj = 0; bj < n; bj += blockSize)
-				for (int i = 0; i < blockSize; i++)
-					for (int k = 0; k < blockSize; k++)
-						for (int j = 0; j < blockSize; j++)
+				for (int i = 0; i < blockSize && bi + i < n; i++)
+					for (int k = 0; k < blockSize && bk + k < n; k++)
+						for (int j = 0; j < blockSize && bj + j < n; j++)
 							c[bi + i][bj + j] += a[bi + i][bk + k] * b[bk + k][bj + j];
 
 	for(int x = 0; x < n; x++) {
