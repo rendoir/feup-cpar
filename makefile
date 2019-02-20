@@ -6,7 +6,7 @@ build:
 	g++ -std=c++17 -O3 main.cpp -o mult -lpapi
 
 debug: 
-	g++ -std=c++17 -ggdb3 main.cpp -o mult -lpapi
+	g++ -std=c++17 -Wall -Wextra -ggdb3 main.cpp -o mult -lpapi
 
 setup:
 	sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid'

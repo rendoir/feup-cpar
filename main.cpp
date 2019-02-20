@@ -1,4 +1,3 @@
-//#include <omp.h>
 #include <stdio.h>
 #include <iostream>
 #include <iomanip>
@@ -9,20 +8,19 @@
 
 using namespace std;
 
-#define PRINT_THRESHOLD 5
-#define SYSTEMTIME clock_t
+const uint64_t PRINT_THRESHOLD = 5;
 
-void initMatrices(double **&a, double **&b, double **&c, unsigned long int size) {
+void initMatrices(double **&a, double **&b, double **&c, uint64_t size) {
     a = (double **)malloc((size) * sizeof(double*));
     b = (double **)malloc((size) * sizeof(double*));
     c = (double **)malloc((size) * sizeof(double*));
 
-    for(int i = 0; i < size; i++) {
+    for(uint64_t i = 0; i < size; i++) {
         a[i] = (double *)malloc((size) * sizeof(double));
         b[i] = (double *)malloc((size) * sizeof(double));
         c[i] = (double *)malloc((size) * sizeof(double));
 
-        for(int j = 0; j < size; j++) {
+        for(uint64_t j = 0; j < size; j++) {
             a[i][j] = 1;
             b[i][j] = i + 1;
             c[i][j] = 0;
@@ -30,8 +28,8 @@ void initMatrices(double **&a, double **&b, double **&c, unsigned long int size)
     }
 }
 
-void destroyMatrices(double **&a, double **&b, double **&c, unsigned long int size) {
-    for(int i = 0; i < size; i++) {
+void destroyMatrices(double **&a, double **&b, double **&c, uint64_t size) {
+    for(uint64_t i = 0; i < size; i++) {
         free(a[i]);
         free(b[i]);
         free(c[i]);
@@ -42,11 +40,11 @@ void destroyMatrices(double **&a, double **&b, double **&c, unsigned long int si
     free(c);
 }
 
-void printResultMatrix(double **&c, unsigned long int size) {
+void printResultMatrix(double **&c, uint64_t size) {
     cout << endl << "Result matrix:" << endl;
-    unsigned int n = min(size, (unsigned long int)PRINT_THRESHOLD);
-    for(int i = 0; i < n; i++) {
-        for(int j = 0; j < n; j++) {
+    uint64_t n = min(size, (uint64_t)PRINT_THRESHOLD);
+    for(uint64_t i = 0; i < n; i++) {
+        for(uint64_t j = 0; j < n; j++) {
             if( j != n - 2 && i != n - 2)
                 cout << c[i][j] << " ";
             else cout << "... ";
@@ -55,115 +53,74 @@ void printResultMatrix(double **&c, unsigned long int size) {
     }
 }
 
-void columnMultiplication(unsigned long int size)
-{
-	SYSTEMTIME Time1, Time2;
+void printTime(clock_t time1, clock_t time2) {
+    printf("Time: %3.3f seconds\n", (double)(time2 - time1) / CLOCKS_PER_SEC);
+}
 
-	char st[100];
+void columnMultiplication(uint64_t size)
+{
+	clock_t time1, time2;
 	double temp;
-	int i, j, k;
-
-	double *pha, *phb, *phc;
-
-	pha = (double *)malloc((size * size) * sizeof(double));
-	phb = (double *)malloc((size * size) * sizeof(double));
-	phc = (double *)malloc((size * size) * sizeof(double));
-
-	for (i = 0; i < size; i++)
-		for (j = 0; j < size; j++)
-			pha[i * size + j] = (double)1.0;
-
-	for (i = 0; i < size; i++)
-		for (j = 0; j < size; j++)
-			phb[i * size + j] = (double)(i + 1);
-
-	Time1 = clock();
-
-	for (i = 0; i < size; i++) {
-		for (j = 0; j < size; j++) {
-			temp = 0;
-			for (k = 0; k < size; k++) {
-				temp += pha[i * size + k] * phb[k * size + j];
-			}
-			phc[i * size + j] = temp;
-		}
-	}
-
-	Time2 = clock();
-	sprintf(st, "Time: %3.3f seconds\n", (double)(Time2 - Time1) / CLOCKS_PER_SEC);
-	cout << st;
-
-	cout << "Result matrix: " << endl;
-	for (i = 0; i < 1; i++)
-	{
-		for (j = 0; j < min((unsigned long int)10, size); j++)
-			cout << phc[j] << " ";
-	}
-
-	free(pha);
-	free(phb);
-	free(phc);
-}
-
-void lineMultiplication(unsigned long int size)
-{
-	SYSTEMTIME Time1, Time2;
-
-	char st[100];
-	int i, j, k;
-
-	double *pha, *phb, *phc;
-	int block_size = 5;
-
-	pha = (double *)malloc((size * size) * sizeof(double));
-	phb = (double *)malloc((size * size) * sizeof(double));
-	phc = (double *)malloc((size * size) * sizeof(double));
-
-	for (i = 0; i < size; i++)
-		for (j = 0; j < size; j++)
-			pha[i * size + j] = (double)1.0;
-
-	for (i = 0; i < size; i++)
-		for (j = 0; j < size; j++)
-			phb[i * size + j] = (double)(i + 1);
-
-	memset(phc, 0, sizeof phc);
-
-	Time1 = clock();
-
-	for (i = 0; i < size; i++)
-		for (k = 0; k < size; k++)
-			for (j = 0; j < size; j++)
-				phc[i * size + j] += pha[i * size + k] * phb[k * size + j];
-
-	Time2 = clock();
-	sprintf(st, "Time: %3.3f seconds\n", (double)(Time2 - Time1) / CLOCKS_PER_SEC);
-	cout << st;
-
-	cout << "Result matrix: " << endl;
-	for (i = 0; i < 1; i++)
-	{
-		for (j = 0; j < min((unsigned long int)10, size); j++)
-			cout << phc[j] << " ";
-	}
-
-	free(pha);
-	free(phb);
-	free(phc);
-}
-
-void blockMultiplication(unsigned long int size, unsigned long int block_size)
-{
     double **a, **b, **c;
     initMatrices(a, b, c, size);
 
-	for (int bi = 0; bi < size; bi += block_size)
-		for (int bk = 0; bk < size; bk += block_size)
-			for (int bj = 0; bj < size; bj += block_size)
-				for (int i = 0; i < block_size && bi + i < size; i++)
-					for (int k = 0; k < block_size && bk + k < size; k++)
-						for (int j = 0; j < block_size && bj + j < size; j++)
+	time1 = clock();
+
+	for (uint64_t i = 0; i < size; i++) {
+		for (uint64_t j = 0; j < size; j++) {
+			temp = 0;
+			for (uint64_t k = 0; k < size; k++) {
+				temp += a[i][k] * b[k][j];
+			}
+			c[i][j] = temp;
+		}
+	}
+
+	time2 = clock();
+    printTime(time1, time2);
+
+    printResultMatrix(c, size);
+    destroyMatrices(a, b, c, size);
+}
+
+void lineMultiplication(uint64_t size)
+{
+	clock_t time1, time2;
+    double **a, **b, **c;
+    initMatrices(a, b, c, size);
+
+	time1 = clock();
+
+	for (uint64_t i = 0; i < size; i++)
+		for (uint64_t k = 0; k < size; k++)
+			for (uint64_t j = 0; j < size; j++)
+				c[i][j] += a[i][k] * b[k][j];
+
+	time2 = clock();
+    printTime(time1, time2);
+
+    printResultMatrix(c, size);
+    destroyMatrices(a, b, c, size);
+}
+
+void blockMultiplication(uint64_t size, uint64_t block_size)
+{
+    clock_t time1, time2;
+    double **a, **b, **c;
+    initMatrices(a, b, c, size);
+
+    time1 = clock();
+
+	for (uint64_t bi = 0; bi < size; bi += block_size)
+		for (uint64_t bk = 0; bk < size; bk += block_size)
+			for (uint64_t bj = 0; bj < size; bj += block_size)
+				for (uint64_t i = 0; i < block_size && bi + i < size; i++)
+					for (uint64_t k = 0; k < block_size && bk + k < size; k++)
+						for (uint64_t j = 0; j < block_size && bj + j < size; j++)
 							c[bi + i][bj + j] += a[bi + i][bk + k] * b[bk + k][bj + j];
+
+    time2 = clock();
+    printTime(time1, time2);
 
     printResultMatrix(c, size);
     destroyMatrices(a, b, c, size);
@@ -191,7 +148,7 @@ int main(int argc, char *argv[])
 	if (ret != PAPI_OK)
 		cerr << "PAPI Error: Add event PAPI_L2_DCM" << endl;
 
-    unsigned long int size;
+    uint64_t size;
 	int option = 0;
 	do
 	{
@@ -220,7 +177,7 @@ int main(int argc, char *argv[])
             lineMultiplication(size);
             break;
         case 3:
-            unsigned long long int block_size;
+            uint64_t block_size;
             cout << "Block size: ";
             cin >> block_size;
             blockMultiplication(size, block_size);
