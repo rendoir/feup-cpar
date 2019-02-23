@@ -1,10 +1,10 @@
 from time import process_time as pt
 
-def initMatrices(size):
+def init_matrices(size):
     return ([1 for i in range(size*size)], [int(i/size)+1 for i in range(size*size)], [0 for i in range(size*size)])
 
-def columnMultiplication(size):
-    mat_a, mat_b, mat_c = initMatrices(size)
+def column_multiplication(size):
+    mat_a, mat_b, mat_c = init_matrices(size)
 
     start = pt()
 
@@ -12,42 +12,42 @@ def columnMultiplication(size):
         for j in range(size):
             temp = 0
             for k in range(size):
-                temp += mat_a[i][k] * mat_b[k][j]
-            mat_c[i][j] = temp
+                temp += mat_a[i * size + k] * mat_b[k * size + j]
+            mat_c[i * size + j] = temp
 
     stop = pt()
 
-    print([mat_c[0][i] for i in range(min(10, size))])
+    print([mat_c[i] for i in range(min(10, size))])
     print("Time: ", end="")
     print(stop-start)
 
-def lineMultiplication(size):
-    mat_a, mat_b, mat_c = initMatrices(size)
+def line_multiplication(size):
+    mat_a, mat_b, mat_c = init_matrices(size)
 
     start = pt()
 
     for i in range(size):
         for k in range(size):
             for j in range(size):
-                mat_c[i][j] += mat_a[i][k] * mat_b[k][j]
+                mat_c[i * size + j] += mat_a[i * size + k] * mat_b[k * size + j]
 
     stop = pt()
 
-    print([mat_c[0][i] for i in range(min(10, size))])
+    print([mat_c[i] for i in range(min(10, size))])
     print("Time: ", end="")
     print(stop-start)
 
-def blockMultiply(size, blockSize):
-    mat_a, mat_b, mat_c = initMatrices(size)
+def block_multiplication(size, block_size):
+    mat_a, mat_b, mat_c = init_matrices(size)
 
     start = pt()
 
-    for bi in range(0, size, blockSize):
-        for bk in range(0, size, blockSize):
-            for bj in range(0, size, blockSize):
-                for i in [ind for ind in range(blockSize) if bi + ind < size]:
-                    for k in [ind for ind in range(blockSize) if bk + ind < size]:
-                        for j in [ind for ind in range(blockSize) if bj + ind < size]:
+    for bi in range(0, size, block_size):
+        for bk in range(0, size, block_size):
+            for bj in range(0, size, block_size):
+                for i in [ind for ind in range(block_size) if bi + ind < size]:
+                    for k in [ind for ind in range(block_size) if bk + ind < size]:
+                        for j in [ind for ind in range(block_size) if bj + ind < size]:
                             mat_c[(bi + i) * size + (bj + j)] += mat_a[(bi + i) * size + (bk + k)] * mat_b[(bk + k) * size + (bj + j)]
 
     stop = pt()
@@ -70,12 +70,10 @@ if __name__ == '__main__':
         size = int(input('Matrix size: '))
 
         if option == 1:
-            onMult(size)
+            column_multiplication(size)
         elif option == 2:
-            onMultLine(size)
-        elif option == 4:
-            onMultLineNumpy(size)
+            line_multiplication(size)
         elif option == 3:
-            blockSize = int(input('Block size: '))
-            blockMultiply(size, blockSize)
+            block_size = int(input('Block size: '))
+            block_multiplication(size, block_size)
 
