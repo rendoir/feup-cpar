@@ -10,43 +10,13 @@ using namespace std;
 
 const uint64_t PRINT_THRESHOLD = 5;
 
-void initMatrices(double **&a, double **&b, double **&c, uint64_t size) {
-    a = (double **)malloc((size) * sizeof(double*));
-    b = (double **)malloc((size) * sizeof(double*));
-    c = (double **)malloc((size) * sizeof(double*));
-
-    for(uint64_t i = 0; i < size; i++) {
-        a[i] = (double *)malloc((size) * sizeof(double));
-        b[i] = (double *)malloc((size) * sizeof(double));
-        c[i] = (double *)malloc((size) * sizeof(double));
-
-        for(uint64_t j = 0; j < size; j++) {
-            a[i][j] = 1;
-            b[i][j] = i + 1;
-            c[i][j] = 0;
-        }
-    }
-}
-
-void destroyMatrices(double **&a, double **&b, double **&c, uint64_t size) {
-    for(uint64_t i = 0; i < size; i++) {
-        free(a[i]);
-        free(b[i]);
-        free(c[i]);
-    }
-
-    free(a);
-    free(b);
-    free(c);
-}
-
-void printResultMatrix(double **&c, uint64_t size) {
+void printResultMatrix(double c[], uint64_t size) {
     cout << endl << "Result matrix:" << endl;
     uint64_t n = min(size, (uint64_t)PRINT_THRESHOLD);
     for(uint64_t i = 0; i < n; i++) {
         for(uint64_t j = 0; j < n; j++) {
             if( j != n - 2 && i != n - 2)
-                cout << c[i][j] << " ";
+                cout << c[i * size + j] << " ";
             else cout << "... ";
         } 
         cout << endl;        
@@ -61,8 +31,15 @@ void columnMultiplication(uint64_t size)
 {
 	clock_t time1, time2;
 	double temp;
-    double **a, **b, **c;
-    initMatrices(a, b, c, size);
+    double* a = (double*)(malloc(size*size*sizeof(double)));
+    double* b = (double*)(malloc(size*size*sizeof(double)));
+    double* c = (double*)(malloc(size*size*sizeof(double)));
+
+    for(uint64_t i = 0; i < size * size; ++i) {
+        a[i] = 1;
+        b[i] = i / size + 1;
+        c[i] = 0;
+    }
 
 	time1 = clock();
 
@@ -70,9 +47,9 @@ void columnMultiplication(uint64_t size)
 		for (uint64_t j = 0; j < size; j++) {
 			temp = 0;
 			for (uint64_t k = 0; k < size; k++) {
-				temp += a[i][k] * b[k][j];
+				temp += a[i * size + k] * b[k * size + j];
 			}
-			c[i][j] = temp;
+			c[i * size + j] = temp;
 		}
 	}
 
@@ -80,34 +57,56 @@ void columnMultiplication(uint64_t size)
     printTime(time1, time2);
 
     printResultMatrix(c, size);
-    destroyMatrices(a, b, c, size);
+
+    free(a);
+    free(b);
+    free(c);
 }
 
 void lineMultiplication(uint64_t size)
 {
 	clock_t time1, time2;
-    double **a, **b, **c;
-    initMatrices(a, b, c, size);
+    double* a = (double*)(malloc(size*size*sizeof(double)));
+    double* b = (double*)(malloc(size*size*sizeof(double)));
+    double* c = (double*)(malloc(size*size*sizeof(double)));
+
+    for(uint64_t i = 0; i < size * size; ++i) {
+        a[i] = 1;
+        b[i] = i / size + 1;
+        c[i] = 0;
+    }
 
 	time1 = clock();
 
 	for (uint64_t i = 0; i < size; i++)
-		for (uint64_t k = 0; k < size; k++)
+		for (uint64_t k = 0; k < size; k++) {
+            double mat_a_ik = a[i * size + k];
 			for (uint64_t j = 0; j < size; j++)
-				c[i][j] += a[i][k] * b[k][j];
+				c[i * size + j] += mat_a_ik * b[k * size + j];
+        }
 
 	time2 = clock();
     printTime(time1, time2);
 
     printResultMatrix(c, size);
-    destroyMatrices(a, b, c, size);
+
+    free(a);
+    free(b);
+    free(c);
 }
 
 void blockMultiplication(uint64_t size, uint64_t block_size)
 {
     clock_t time1, time2;
-    double **a, **b, **c;
-    initMatrices(a, b, c, size);
+    double* a = (double*)(malloc(size*size*sizeof(double)));
+    double* b = (double*)(malloc(size*size*sizeof(double)));
+    double* c = (double*)(malloc(size*size*sizeof(double)));
+
+    for(uint64_t i = 0; i < size * size; ++i) {
+        a[i] = 1;
+        b[i] = i / size + 1;
+        c[i] = 0;
+    }
 
     time1 = clock();
 
@@ -117,13 +116,16 @@ void blockMultiplication(uint64_t size, uint64_t block_size)
 				for (uint64_t i = 0; i < block_size && bi + i < size; i++)
 					for (uint64_t k = 0; k < block_size && bk + k < size; k++)
 						for (uint64_t j = 0; j < block_size && bj + j < size; j++)
-							c[bi + i][bj + j] += a[bi + i][bk + k] * b[bk + k][bj + j];
+							c[(bi + i) * size + (bj + j)] += a[(bi + i) * size + (bk + k)] * b[(bk + k) * size + (bj + j)];
 
     time2 = clock();
     printTime(time1, time2);
 
     printResultMatrix(c, size);
-    destroyMatrices(a, b, c, size);
+
+    free(a);
+    free(b);
+    free(c);
 }
 
 int main(int argc, char *argv[])
@@ -147,6 +149,7 @@ int main(int argc, char *argv[])
 	ret = PAPI_add_event(event_set, PAPI_L2_DCM);
 	if (ret != PAPI_OK)
 		cerr << "PAPI Error: Add event PAPI_L2_DCM" << endl;
+        
 
     uint64_t size;
 	int option = 0;

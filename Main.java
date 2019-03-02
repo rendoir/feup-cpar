@@ -51,18 +51,23 @@ public class Main {
 
         long id = Thread.currentThread().getId();
         long start = th.getThreadCpuTime(id);
+        long start2 = System.nanoTime();
 
         for(int i = 0; i < size; ++i)
-            for(int k = 0; k < size; ++k)
+            for(int k = 0; k < size; ++k) {
+                double mat_a_ik = mat_a[i * size + k];
                 for(int j = 0; j < size; ++j)
-                    mat_c[i * size + j] += mat_a[i * size + k] * mat_b[k * size + j];
+                    mat_c[i * size + j] += mat_a_ik * mat_b[k * size + j];
+            }
 
         long end = th.getThreadCpuTime(id);
+        long end2 = System.nanoTime();
 
         for(int i = 0; i < Math.min(10, size); ++i)
             System.out.print(mat_c[i] + " ");
         System.out.println();
-        System.out.println("Time: " + (end-start)/1e9);
+        System.out.println("Time1: " + (end-start)/1e9);
+        System.out.println("Time2: " + (end2-start2)/1e9);
         
         return mat_c;
     }
