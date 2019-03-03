@@ -112,11 +112,11 @@ void blockMultiplication(uint64_t size, uint64_t block_size)
 
     time1 = clock();
 
-	for(uint64_t block_hor = 0; block_hor < size; block_hor += block_size)
-        for(uint64_t block_ver = 0; block_ver < size; block_ver += block_size)
+	for(uint64_t bk = 0; bk < size; bk += block_size)
+        for(uint64_t bj = 0; bj < size; bj += block_size)
                 for(uint64_t i = 0; i < size; i++)
-                        for(uint64_t k = block_hor; k < min(block_hor+block_size, size); k++)
-                                for(uint64_t j = block_ver; j<min(block_ver+block_size, size); j++)
+                        for(uint64_t k = bk; k < min(bk+block_size, size); k++)
+                                for(uint64_t j = bj; j<min(bj+block_size, size); j++)
                                         c[i*size+j] += a[i*size+k]*b[k*size+j];
 
     time2 = clock();
