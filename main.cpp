@@ -6,6 +6,8 @@
 #include <papi.h>
 #include <string.h>
 
+#define min(a,b) ((a)<(b)?(a):(b))
+
 using namespace std;
 
 const uint64_t PRINT_THRESHOLD = 5;
@@ -110,13 +112,12 @@ void blockMultiplication(uint64_t size, uint64_t block_size)
 
     time1 = clock();
 
-	for (uint64_t bi = 0; bi < size; bi += block_size)
-		for (uint64_t bk = 0; bk < size; bk += block_size)
-			for (uint64_t bj = 0; bj < size; bj += block_size)
-				for (uint64_t i = 0; i < block_size && bi + i < size; i++)
-					for (uint64_t k = 0; k < block_size && bk + k < size; k++)
-						for (uint64_t j = 0; j < block_size && bj + j < size; j++)
-							c[(bi + i) * size + (bj + j)] += a[(bi + i) * size + (bk + k)] * b[(bk + k) * size + (bj + j)];
+	for(uint64_t block_hor = 0; block_hor < size; block_hor += block_size)
+        for(uint64_t block_ver = 0; block_ver < size; block_ver += block_size)
+                for(uint64_t i = 0; i < size; i++)
+                        for(uint64_t k = block_hor; k < min(block_hor+block_size, size); k++)
+                                for(uint64_t j = block_ver; j<min(block_ver+block_size, size); j++)
+                                        c[i*size+j] += a[i*size+k]*b[k*size+j];
 
     time2 = clock();
     printTime(time1, time2);

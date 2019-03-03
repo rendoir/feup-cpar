@@ -72,45 +72,10 @@ public class Main {
         return mat_c;
     }
 
-    public double[] blockMultiplication(int size, int blockSize) {
-        double[] mat_a = new double[size * size];
-        double[] mat_b = new double[size * size];
-        double[] mat_c = new double[size * size];
-
-        ThreadMXBean th = ManagementFactory.getThreadMXBean();
-
-        for(int i = 0; i < size * size; ++i) {
-            mat_a[i] = 1;
-            mat_b[i] = i / size + 1;
-            mat_c[i] = 0;
-        }
-
-        long id = Thread.currentThread().getId();
-        long start = th.getThreadCpuTime(id);
-
-        for (int bi = 0; bi < size; bi += blockSize)
-		    for (int bk = 0; bk < size; bk += blockSize)
-                for (int bj = 0; bj < size; bj += blockSize)
-                    for (int i = 0; i < blockSize && bi + i < size; i++)
-                        for (int k = 0; k < blockSize && bk + k < size; k++)
-                            for (int j = 0; j < blockSize && bj + j < size; j++)
-                                mat_c[(bi + i) * size + (bj + j)] += mat_a[(bi + i) * size + (bk + k)] * mat_b[(bk + k) * size + (bj + j)];
-
-        long end = th.getThreadCpuTime(id);
-
-        for(int i = 0; i < Math.min(10, size); ++i)
-            System.out.print(mat_c[i] + " ");
-        System.out.println();
-        System.out.println("Time: " + (end-start)/1e9);
-        
-        return mat_c;
-    }
-
     public static void main(String[] args) {
         Main m = new Main();
         System.out.println("1. Multiplication");
         System.out.println("2. Line Multiplication");
-        System.out.println("3. Partitioned Multiplication");
 
         Scanner reader = new Scanner(System.in);
 
@@ -129,11 +94,6 @@ public class Main {
                     break;
                 case 2:
                     m.lineMultiplication(size);
-                    break;
-                case 3:
-                    System.out.print("Block size: ");
-                    int blockSize = reader.nextInt();
-                    m.blockMultiplication(size, blockSize);
                 default:
                     break;
             }
