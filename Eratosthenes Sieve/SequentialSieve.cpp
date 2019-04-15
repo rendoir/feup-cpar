@@ -7,18 +7,15 @@ using namespace std;
 
 
 //Odd-only sequential sieve of Eratosthenes
-pair<bool*, long long> SequentialSieveOfEratosthenes::run(long long n) 
+bool* SequentialSieveOfEratosthenes::run(long long n) 
 {
     bool *primes = new bool[n/2];
-    long long n_primes = n/2;
     long long k = 3;
 
     do {
         
-        for (long long j = k*k ; j<n ; j+=2*k) {
+        for (long long j = k*k ; j<n ; j+=2*k)
             primes[j>>1]=true;
-            n_primes--;
-        }
         
         do {
             k+=2;
@@ -26,24 +23,28 @@ pair<bool*, long long> SequentialSieveOfEratosthenes::run(long long n)
         
     } while (k*k <= n);
 
-    return pair<bool*, long long>(primes, n_primes+1);
+    return primes;
 }
 
 void SequentialSieveOfEratosthenes::test()
 {  
-    long long n;
-    pair<bool*, long long> primes;
+    long long n = 0;
+    bool* primes;
 
-    cout << "Upper bound: ";
-    cin >> n;
+    while(n <= 0) {
+        cout << "Upper bound: ";
+        cin >> n;
+    }
 
     primes = run(n);
     
-    cout << "Found " << primes.second << " prime numbers" << endl;
-    cout << "1 2 ";
+    long long n_primes = n > 2 ? 2 : n > 1 ? 1 : 0;
+    cout << (n > 2 ? "1 2 " : n > 1 ? "1 " : "");
     for (int i=3; i<n; i+=2)
-        if (!primes.first[i>>1])
+        if (!primes[i>>1]) {
+            n_primes++;
             cout << i << " ";
+        }
+    cout << endl << "Found " << n_primes << " prime numbers" << endl;
 
-    cout << endl;
 }
