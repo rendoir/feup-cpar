@@ -32,7 +32,7 @@ bool* OpenMPSieveOfEratosthenes::run(long long n, unsigned int threads)
 void OpenMPSieveOfEratosthenes::test()
 {  
     long long n = 0;
-    unsigned int threads;
+    unsigned int threads = 0;
     bool* primes;
 
     while(n <= 0) {
@@ -40,8 +40,10 @@ void OpenMPSieveOfEratosthenes::test()
         cin >> n;
     }
 
-    cout << "Threads: ";
-    cin >> threads;
+    while(threads == 0 || threads > omp_get_max_threads()) {
+        cout << "Threads: ";
+        cin >> threads;
+    }
 
     primes = run(n, threads);
     
