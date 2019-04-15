@@ -1,4 +1,4 @@
-#include "Sequential.h"
+#include "SequentialSieve.h"
 
 #include <iostream>
 #include <math.h>
