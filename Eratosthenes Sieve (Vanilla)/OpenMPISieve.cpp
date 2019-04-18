@@ -7,72 +7,60 @@
 
 using namespace std;
 
-void OpenMPISieveOfEratosthenes::run(long long n1) 
+void OpenMPISieveOfEratosthenes::run(long long exponent) 
 {
-   int rank, size;
-	double openMPITime = 0;
-	bool* list;
-	unsigned long startBlockValue, counter = 0, primes = 0, n = pow(2, n1);
+	unsigned long counter = 0, nr_primes = 0, n = pow(2, exponent);
 
+    int rank, size;
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-	// calculate the lower and higher values of each process and its offset
-	unsigned long blockSize = BLOCK_SIZE(rank, n - 1, size);
-	unsigned long lowValue = BLOCK_LOW(rank, n - 1, size) + 2;
-	unsigned long highValue = BLOCK_HIGH(rank, n - 1, size) + 2;
+	unsigned long block_size = BLOCK_SIZE(rank, n - 1, size);
+	unsigned long lower_bound = BLOCK_LOW(rank, n - 1, size) + 2;
+	unsigned long upper_bound = BLOCK_HIGH(rank, n - 1, size) + 2;
 
-	// initializes the list
-	list = new bool[blockSize];
-    fill_n(list, blockSize, true);
+	bool* list = new bool[block_size];
+    fill_n(list, block_size, true);
 
-	if(rank == 0) {
-		cout << size << ";" << n << ";" << n1 << ";";
-		openMPITime = -MPI_Wtime();
+    double run_time = 0;
+	if(IS_ROOT(rank)) {
+		cout << size << ";" << n << ";" << exponent << ";";
+		run_time = MPI_Wtime();
 	}
 
-	for (unsigned long p = 2; pow(p, 2) <= n;) {
-		// calculate the start block value to each process
-		if (pow(p, 2) < lowValue) {
-			lowValue % p == 0 ?
-					startBlockValue = lowValue :
-					startBlockValue = lowValue + (p - (lowValue % p));
-		} else {
-			startBlockValue = pow(p, 2);
-		}
+    unsigned long start_value, k = 2;
+	do {
+		//Antecipate uneven block size allocation and calculate offset if necessary
+		if (k*k < lower_bound)
+            start_value = (lower_bound % k == 0 ? lower_bound : lower_bound + (k - (lower_bound % k)));
+        else
+			start_value = k*k;
 
-		// mark the multiples of each prime
-		for (unsigned long i = startBlockValue; i <= highValue; i += p)
-			list[i - lowValue] = false;
+		for (unsigned long i = start_value; i <= upper_bound; i += k)
+			list[i - lower_bound] = false;
 
-		// get the next prime to broadcast it to the other processes
-		if (rank == 0) {
+		if (IS_ROOT(rank)) {
 			do {
-				p++;
-			} while (!list[p - lowValue] && pow(p, 2) < highValue);
+				k++;
+			} while (!list[k - lower_bound] && k*k < upper_bound);
 		}
 
-		MPI_Bcast(&p, 1, MPI_LONG, 0, MPI_COMM_WORLD);
+		MPI_Bcast(&k, 1, MPI_LONG, 0, MPI_COMM_WORLD);
+	}while(k*k <= n);
+
+	if(IS_ROOT(rank)) {
+		run_time = MPI_Wtime() - run_time;
+		cout << run_time << ";";
 	}
 
-	if(rank == 0) {
-		openMPITime += MPI_Wtime();
-		cout << openMPITime << ";";
-	}
-
-	// count all the primes
-	for (unsigned long i = 0; i < blockSize; i++)
+	for (unsigned long i = 0; i < block_size; i++)
 		if (list[i])
 			counter++;
 
-	// reduce the counter to multiple processes
-	if (size > 1)
-		MPI_Reduce(&counter, &primes, 1, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
-	else
-		primes = counter;
-
+	MPI_Reduce(&counter, &nr_primes, 1, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+	
 	if(rank == 0)
-		cout << primes << endl;
+		cout << nr_primes << endl;
 
 	free(list);
 }
