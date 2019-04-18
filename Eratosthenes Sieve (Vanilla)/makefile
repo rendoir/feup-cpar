@@ -1,6 +1,7 @@
 .PHONY: default main mpi clean
 
 MPI := OpenMPISieve.cpp
+MPMPI := OpenMPMPISieve.cpp
 SRC := $(filter-out $(MPI), $(wildcard *.cpp))
 
 default: main mpi
@@ -10,6 +11,9 @@ main:
 
 mpi:
 	mpiCC $(MPI) -o mpisieve
+
+mpmpi:
+	mpic++ -o mpmpisieve $(MPMPI) -fopenmp
 
 clean:
 	rm -rf sieve mpisieve
