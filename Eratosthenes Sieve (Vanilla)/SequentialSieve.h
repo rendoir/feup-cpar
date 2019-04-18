@@ -4,7 +4,7 @@
 class SequentialSieveOfEratosthenes
 {
 public:
-    static bool* run(long long n);
+    static void run(long long exponent);
     static void test();
 };
 

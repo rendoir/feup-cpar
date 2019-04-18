@@ -19,8 +19,8 @@ void OpenMPISieveOfEratosthenes::run(long long exponent)
 	unsigned long lower_bound = BLOCK_LOW(rank, n - 1, size) + 2;
 	unsigned long upper_bound = BLOCK_HIGH(rank, n - 1, size) + 2;
 
-	bool* list = new bool[block_size];
-    fill_n(list, block_size, true);
+	bool* marking = new bool[block_size];
+    fill_n(marking, block_size, true);
 
     double run_time = 0;
 	if(IS_ROOT(rank)) {
@@ -37,12 +37,12 @@ void OpenMPISieveOfEratosthenes::run(long long exponent)
 			start_value = k*k;
 
 		for (unsigned long i = start_value; i <= upper_bound; i += k)
-			list[i - lower_bound] = false;
+			marking[i - lower_bound] = false;
 
 		if (IS_ROOT(rank)) {
 			do {
 				k++;
-			} while (!list[k - lower_bound] && k*k < upper_bound);
+			} while (!marking[k - lower_bound] && k*k < upper_bound);
 		}
 
 		MPI_Bcast(&k, 1, MPI_LONG, 0, MPI_COMM_WORLD);
@@ -54,7 +54,7 @@ void OpenMPISieveOfEratosthenes::run(long long exponent)
 	}
 
 	for (unsigned long i = 0; i < block_size; i++)
-		if (list[i])
+		if (marking[i])
 			counter++;
 
 	MPI_Reduce(&counter, &nr_primes, 1, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -62,7 +62,7 @@ void OpenMPISieveOfEratosthenes::run(long long exponent)
 	if(rank == 0)
 		cout << nr_primes << endl;
 
-	free(list);
+	free(marking);
 }
 
 int main(int argc, char** argv) {
