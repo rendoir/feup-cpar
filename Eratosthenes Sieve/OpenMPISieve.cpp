@@ -1,8 +1,7 @@
 #include "OpenMPISieve.h"
 
 #include <mpi.h>
-#include <math.h>
-#include <algorithm>
+#include <cmath>
 #include <iostream>
 
 using namespace std;

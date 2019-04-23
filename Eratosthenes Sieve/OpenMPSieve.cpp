@@ -35,7 +35,6 @@ void OpenMPSieveOfEratosthenes::test()
 {  
     unsigned long long n = 0;
     int threads = 0;
-    bool* primes;
 
     while(n <= 1) {
         cout << "Upper bound: ";

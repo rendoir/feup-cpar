@@ -2,14 +2,15 @@
 
 MPI := OpenMPISieve.cpp
 SRC := $(filter-out $(MPI), $(wildcard *.cpp))
+FLAGS := -std=c++17 -O3
 
 default: main mpi
 
 main:
-	g++ -std=c++17 -O3 $(SRC) -o sieve -fopenmp
+	g++ $(FLAGS) $(SRC) -o sieve -fopenmp
 
 mpi:
-	mpiCC $(MPI) -o mpisieve
+	mpiCC $(FLAGS) $(MPI) -o mpisieve
 
 clean:
 	rm -rf sieve mpisieve

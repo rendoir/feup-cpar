@@ -1,9 +1,6 @@
 #ifndef SEQUENTIAL_SIEVE_H
 #define SEQUENTIAL_SIEVE_H
 
-#include <cstdint>
-
-
 class SequentialSieveOfEratosthenes
 {
 public:

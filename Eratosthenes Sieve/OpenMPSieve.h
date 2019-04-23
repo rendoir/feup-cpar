@@ -1,9 +1,6 @@
 #ifndef OPENMP_SIEVE_H
 #define OPENMP_SIEVE_H
 
-#include <cstdint>
-
-
 class OpenMPSieveOfEratosthenes
 {
 public:
