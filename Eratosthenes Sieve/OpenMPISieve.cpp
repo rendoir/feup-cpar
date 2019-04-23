@@ -7,28 +7,27 @@
 
 using namespace std;
 
-void OpenMPISieveOfEratosthenes::run(long long exponent) 
+void OpenMPISieveOfEratosthenes::run(unsigned long long exponent) 
 {
-	unsigned long counter = 0, nr_primes = 0, n = pow(2, exponent);
+	unsigned long long n = pow(2, exponent);
 
     int rank, size;
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-	unsigned long block_size = BLOCK_SIZE(rank, (n-1)/2, size);
-	unsigned long lower_bound = 2*BLOCK_LOW(rank, (n-1)/2, size) + 3;
-	unsigned long upper_bound = 2*BLOCK_HIGH(rank, (n-1)/2, size) + 3;
+	unsigned long long block_size = BLOCK_SIZE(rank, (n-1)/2, size);
+	unsigned long long lower_bound = 2*BLOCK_LOW(rank, (n-1)/2, size) + 3;
+	unsigned long long upper_bound = 2*BLOCK_HIGH(rank, (n-1)/2, size) + 3;
 
 	bool* marking = new bool[block_size];
     fill_n(marking, block_size, true);
 
     double run_time = 0;
 	if(IS_ROOT(rank)) {
-		cout << size << ";" << n << ";" << exponent << ";";
 		run_time = MPI_Wtime();
 	}
 
-    unsigned long start_value, k = 3;
+    unsigned long long start_value, k = 3;
 	do {
 		//Antecipate uneven block size allocation and calculate offset if necessary
 		if (k*k < lower_bound) {
@@ -38,7 +37,7 @@ void OpenMPISieveOfEratosthenes::run(long long exponent)
         else
 			start_value = k*k;
 
-		for (unsigned long i = start_value; i <= upper_bound; i += 2*k)
+		for (unsigned long long i = start_value; i <= upper_bound; i += 2*k)
 			marking[(i - lower_bound)>>1] = false;
 
 		if (IS_ROOT(rank)) {
@@ -52,36 +51,45 @@ void OpenMPISieveOfEratosthenes::run(long long exponent)
 
 	if(IS_ROOT(rank)) {
 		run_time = MPI_Wtime() - run_time;
-		cout << run_time << ";" << endl;
 	}
 
-	for (unsigned long i = 0; i < block_size; i++)
+	print(marking, block_size, rank, size, lower_bound, n);
+	
+	free(marking);
+}
+
+void OpenMPISieveOfEratosthenes::print(bool *marking, unsigned long long block_size, int rank, int size, unsigned long long lower_bound, unsigned long long n) 
+{
+	unsigned long long counter = 0, nr_primes = 0;
+
+	for (unsigned long long i = 0; i < block_size; i++)
         if (marking[i])
             counter++;
 
 	MPI_Reduce(&counter, &nr_primes, 1, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);                
 	
-	if(rank == 0)
-		cout << nr_primes << endl;
+	if(rank == 0) {
+		if(n>=2) nr_primes++;
+	    cout << "Found " << nr_primes << " prime numbers" << endl;
+		cout << "2" << endl;
+	}
 
-	for ( int i = 0; i < size; ++i ) {
+	for ( unsigned long long i = 0; i < size; ++i ) {
 		if ( rank == i ) {
 			for (unsigned long long j = 0; j < block_size; j++)
 				if(marking[j])
-					cout << j*2 + lower_bound << " | ";
+					cout << j*2 + lower_bound << " ";
 			cout << endl;
 		}
     	MPI_Barrier(MPI_COMM_WORLD);
 	}
-
-	free(marking);
 }
 
 int main(int argc, char** argv) {
 	MPI_Init(&argc, &argv);
     
-	long long n = atoll(argv[1]);
-	OpenMPISieveOfEratosthenes::run(n);
+	unsigned long long exponent = atoll(argv[1]);
+	OpenMPISieveOfEratosthenes::run(exponent);
 
 	MPI_Finalize();
 

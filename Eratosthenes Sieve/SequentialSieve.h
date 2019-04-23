@@ -1,11 +1,15 @@
 #ifndef SEQUENTIAL_SIEVE_H
 #define SEQUENTIAL_SIEVE_H
 
+#include <cstdint>
+
+
 class SequentialSieveOfEratosthenes
 {
 public:
-    static bool* run(long long n);
+    static void run(unsigned long long n);
     static void test();
+    static void print(bool *primes, unsigned long long n);
 };
 
 #endif
