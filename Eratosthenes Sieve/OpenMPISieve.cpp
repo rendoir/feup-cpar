@@ -64,6 +64,16 @@ void OpenMPISieveOfEratosthenes::run(long long exponent)
 	if(rank == 0)
 		cout << nr_primes << endl;
 
+	for ( int i = 0; i < size; ++i ) {
+		if ( rank == i ) {
+			for (unsigned long long j = 0; j < block_size; j++)
+				if(marking[j])
+					cout << j*2 + lower_bound << " | ";
+			cout << endl;
+		}
+    	MPI_Barrier(MPI_COMM_WORLD);
+	}
+
 	free(marking);
 }
 
