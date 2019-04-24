@@ -3,6 +3,7 @@
 #include <mpi.h>
 #include <cmath>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -90,13 +91,22 @@ void OpenMPISieveOfEratosthenes::print(bool *marking, unsigned long long block_s
 	}
 }
 
-int main(int argc, char** argv) {
-	MPI_Init(&argc, &argv);
-    
-	unsigned long long exponent = atoll(argv[1]);
-	OpenMPISieveOfEratosthenes::run(exponent);
+int OpenMPISieveOfEratosthenes::test(int argc, char** argv)
+{
+	unsigned long long exponent = 0;
+    int processes = 0;
 
-	MPI_Finalize();
+	while(exponent <= 1) {
+		cout << "Exponent: ";
+		cin >> exponent;
+    }
 
-	return 0;
+    while(processes <= 0) {
+        cout << "Processes: ";
+        cin >> processes;
+    }
+
+	string command = "mpirun -np " + to_string(processes) + " mpisieve " + to_string(exponent);
+
+	return system(command.c_str());
 }

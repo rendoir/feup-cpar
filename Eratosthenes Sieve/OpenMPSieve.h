@@ -5,7 +5,7 @@ class OpenMPSieveOfEratosthenes
 {
 public:
     static void run(unsigned long long exponent, int threads);
-    static void test();
+    static int test(int argc, char** argv);
     static void print(bool *primes, unsigned long long n, double run_time);
 };
 

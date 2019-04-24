@@ -34,7 +34,7 @@ void SequentialSieveOfEratosthenes::run(unsigned long long exponent)
     delete primes;
 }
 
-void SequentialSieveOfEratosthenes::test()
+int SequentialSieveOfEratosthenes::test(int argc, char** argv)
 {  
     unsigned long long n = 0;
 
@@ -44,6 +44,8 @@ void SequentialSieveOfEratosthenes::test()
     }
 
     run(n);
+
+    return 0;
 }
 
 void SequentialSieveOfEratosthenes::print(bool *primes, unsigned long long n, double run_time) {

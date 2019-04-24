@@ -37,7 +37,7 @@ void OpenMPSieveOfEratosthenes::run(unsigned long long exponent, int threads)
     delete primes;
 }
 
-void OpenMPSieveOfEratosthenes::test()
+int OpenMPSieveOfEratosthenes::test(int argc, char** argv)
 {  
     unsigned long long n = 0;
     int threads = 0;
@@ -47,12 +47,14 @@ void OpenMPSieveOfEratosthenes::test()
         cin >> n;
     }
 
-    while(threads == 0 || threads > omp_get_max_threads()) {
+    while(threads <= 0 || threads > omp_get_max_threads()) {
         cout << "Threads: ";
         cin >> threads;
     }
 
     run(n, threads);
+
+    return 0;
 }
 
 void OpenMPSieveOfEratosthenes::print(bool *primes, unsigned long long n, double run_time)

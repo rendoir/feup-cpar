@@ -1,12 +1,13 @@
 #include "SequentialSieve.h"
 #include "OpenMPSieve.h"
+#include "OpenMPISieve.h"
 
 #include <iostream>
 
 using namespace std;
 
 
-void run()
+void run(int argc, char** argv)
 {
     unsigned int option;
 
@@ -14,6 +15,7 @@ void run()
         cout << endl;
         cout << "1. Sequential" << endl;
         cout << "2. OpenMP" << endl;
+        cout << "3. OpenMPI" << endl;
         cout << "0. Exit" << endl;
         cout << "Option: ";
         cin >> option;
@@ -25,11 +27,15 @@ void run()
                 return;
         
             case 1:
-                SequentialSieveOfEratosthenes::test();
+                SequentialSieveOfEratosthenes::test(argc, argv);
                 break;
 
             case 2:
-                OpenMPSieveOfEratosthenes::test();
+                OpenMPSieveOfEratosthenes::test(argc, argv);
+                break;
+
+            case 3:
+                OpenMPISieveOfEratosthenes::test(argc, argv);
                 break;
 
             default:
@@ -40,5 +46,5 @@ void run()
 
 int main (int argc, char *argv[])
 {
-    run();
+    run(argc, argv);
 }
