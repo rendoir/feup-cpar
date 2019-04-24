@@ -1,6 +1,7 @@
 #include "SequentialSieve.h"
 #include "OpenMPSieve.h"
 #include "OpenMPISieve.h"
+#include "HybridSieve.h"
 
 #include <iostream>
 
@@ -16,6 +17,7 @@ void run(int argc, char** argv)
         cout << "1. Sequential" << endl;
         cout << "2. OpenMP" << endl;
         cout << "3. OpenMPI" << endl;
+        cout << "4. Hybrid" << endl;
         cout << "0. Exit" << endl;
         cout << "Option: ";
         cin >> option;
@@ -36,6 +38,10 @@ void run(int argc, char** argv)
 
             case 3:
                 OpenMPISieveOfEratosthenes::test(argc, argv);
+                break;
+
+            case 4:
+                HybridSieveOfEratosthenes::test(argc, argv);
                 break;
 
             default:

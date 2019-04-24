@@ -1,6 +1,6 @@
 mult
 sieve
 mpisieve
-mpmpisieve
+hybridsieve
 .vscode
 *.class
