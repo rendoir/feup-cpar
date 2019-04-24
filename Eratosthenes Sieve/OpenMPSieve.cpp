@@ -1,19 +1,24 @@
 #include "OpenMPSieve.h"
 
 #include <iostream>
+#include <ctime>
 #include <omp.h>
+#include <cmath>
 
 using namespace std;
 
 
 //Odd-only parallel (OpenMP) sieve of Eratosthenes
-void OpenMPSieveOfEratosthenes::run(unsigned long long n, int threads) 
+void OpenMPSieveOfEratosthenes::run(unsigned long long exponent, int threads) 
 {
+    unsigned long long n = pow(2, exponent);
+
     bool *primes = new bool[n/2];
     fill_n(primes, n/2, true);
     unsigned long long k = 3;
 
     omp_set_num_threads(threads);
+    clock_t begin = clock();
 
     do {
         #pragma omp parallel for
@@ -26,7 +31,8 @@ void OpenMPSieveOfEratosthenes::run(unsigned long long n, int threads)
         
     } while (k*k <= n);
 
-    print(primes, n);
+    double run_time = (double)(clock() - begin) / CLOCKS_PER_SEC;
+    print(primes, n, run_time);
 
     delete primes;
 }
@@ -37,7 +43,7 @@ void OpenMPSieveOfEratosthenes::test()
     int threads = 0;
 
     while(n <= 1) {
-        cout << "Upper bound: ";
+        cout << "Exponent: ";
         cin >> n;
     }
 
@@ -49,7 +55,7 @@ void OpenMPSieveOfEratosthenes::test()
     run(n, threads);
 }
 
-void OpenMPSieveOfEratosthenes::print(bool *primes, unsigned long long n)
+void OpenMPSieveOfEratosthenes::print(bool *primes, unsigned long long n, double run_time)
 {
     unsigned long long n_primes = n >= 2 ? 1 : 0;
     cout << (n >= 2 ? "2 " : "");
@@ -60,4 +66,5 @@ void OpenMPSieveOfEratosthenes::print(bool *primes, unsigned long long n)
         }
     }
     cout << endl << "Found " << n_primes << " prime numbers" << endl;
+    cout << "Run time: " << run_time << " seconds" << endl;
 }

@@ -4,9 +4,9 @@
 class SequentialSieveOfEratosthenes
 {
 public:
-    static void run(unsigned long long n);
+    static void run(unsigned long long exponent);
     static void test();
-    static void print(bool *primes, unsigned long long n);
+    static void print(bool *primes, unsigned long long n, double run_time);
 };
 
 #endif

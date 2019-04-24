@@ -52,12 +52,12 @@ void OpenMPISieveOfEratosthenes::run(unsigned long long exponent)
 		run_time = MPI_Wtime() - run_time;
 	}
 
-	print(marking, block_size, rank, size, lower_bound, n);
+	print(marking, block_size, rank, size, lower_bound, n, run_time);
 	
 	free(marking);
 }
 
-void OpenMPISieveOfEratosthenes::print(bool *marking, unsigned long long block_size, int rank, int size, unsigned long long lower_bound, unsigned long long n) 
+void OpenMPISieveOfEratosthenes::print(bool *marking, unsigned long long block_size, int rank, int size, unsigned long long lower_bound, unsigned long long n, double run_time) 
 {
 	unsigned long long counter = 0, nr_primes = 0;
 
@@ -68,9 +68,10 @@ void OpenMPISieveOfEratosthenes::print(bool *marking, unsigned long long block_s
 	MPI_Reduce(&counter, &nr_primes, 1, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);                
 	
 	if(rank == 0) {
-		if(n>=2) nr_primes++;
-	    cout << "Found " << nr_primes << " prime numbers" << endl;
-		cout << "2" << endl;
+		if(n>=2) {
+			nr_primes++;
+			cout << "2" << endl;
+		}
 	}
 
 	for ( unsigned long long i = 0; i < size; ++i ) {
@@ -81,6 +82,11 @@ void OpenMPISieveOfEratosthenes::print(bool *marking, unsigned long long block_s
 			cout << endl;
 		}
     	MPI_Barrier(MPI_COMM_WORLD);
+	}
+
+	if(rank == 0) {
+		cout << "Run time: " << run_time << " seconds" << endl;
+	    cout << "Found " << nr_primes << " prime numbers" << endl;
 	}
 }
 
