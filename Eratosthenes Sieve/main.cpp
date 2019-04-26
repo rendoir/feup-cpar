@@ -55,7 +55,6 @@ int runManual()
 
 int runAuto() 
 { 
-    cout << "AUTOOOOOOOOOOOOO" << endl;
     while(Parameters::current_exponent <= Parameters::upper_exponent) {
         if(Parameters::algorithm == "sequential")
             SequentialSieveOfEratosthenes::test();

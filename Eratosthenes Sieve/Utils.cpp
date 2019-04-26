@@ -20,7 +20,6 @@ int parseParameters(int argc, char** argv)
     }
 
     if(argc >= 4) {
-        cout << "YO METI AUTO" << endl;
         Parameters::automatic = true;
         Parameters::algorithm = argv[1];
         Parameters::lower_exponent = stoi(argv[2]);

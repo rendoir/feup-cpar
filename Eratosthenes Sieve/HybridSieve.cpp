@@ -1,4 +1,5 @@
 #include "HybridSieve.h"
+#include "Utils.h"
 
 #include <mpi.h>
 #include <omp.h>
@@ -101,20 +102,26 @@ int HybridSieveOfEratosthenes::test()
     int processes = 0;
     int threads = 0;
 
-	while(exponent <= 1) {
-		cout << "Exponent: ";
-		cin >> exponent;
-    }
+	if(Parameters::automatic) {
+        exponent = Parameters::current_exponent;
+		threads = Parameters::threads;
+        processes = Parameters::processes;
+    } else {
+		while(exponent <= 1) {
+			cout << "Exponent: ";
+			cin >> exponent;
+		}
 
-    while(processes <= 0) {
-        cout << "Processes: ";
-        cin >> processes;
-    }
+		while(processes <= 0) {
+			cout << "Processes: ";
+			cin >> processes;
+		}
 
-    while(threads <= 0 || threads > omp_get_max_threads()) {
-        cout << "Threads: ";
-        cin >> threads;
-    }
+		while(threads <= 0 || threads > omp_get_max_threads()) {
+			cout << "Threads: ";
+			cin >> threads;
+		}
+	}
 
 	string command = "mpirun -np " + to_string(processes) + " hybridsieve " + to_string(exponent) + " " + to_string(threads);
 

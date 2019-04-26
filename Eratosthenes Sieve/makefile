@@ -1,10 +1,10 @@
 .PHONY: default main mpi hybrid clean
 
 MPI_ENTRY := mainMPI.cpp
-MPI_SRC := OpenMPISieve.cpp
+MPI_SRC := OpenMPISieve.cpp Utils.cpp
 
 HYBRID_ENTRY := mainHybrid.cpp
-HYBRID_SRC := HybridSieve.cpp
+HYBRID_SRC := HybridSieve.cpp Utils.cpp
 
 SRC := $(filter-out $(MPI_ENTRY) $(HYBRID_ENTRY), $(wildcard *.cpp))
 FLAGS := -std=c++17 -O3

@@ -1,4 +1,5 @@
 #include "OpenMPISieve.h"
+#include "Utils.h"
 
 #include <mpi.h>
 #include <cmath>
@@ -96,14 +97,19 @@ int OpenMPISieveOfEratosthenes::test()
 	unsigned long long exponent = 0;
     int processes = 0;
 
-	while(exponent <= 1) {
-		cout << "Exponent: ";
-		cin >> exponent;
-    }
+    if(Parameters::automatic) {
+        exponent = Parameters::current_exponent;
+        processes = Parameters::processes;
+    } else {
+        while(exponent <= 1) {
+            cout << "Exponent: ";
+            cin >> exponent;
+        }
 
-    while(processes <= 0) {
-        cout << "Processes: ";
-        cin >> processes;
+		while(processes <= 0) {
+			cout << "Processes: ";
+			cin >> processes;
+		}
     }
 
 	string command = "mpirun -np " + to_string(processes) + " mpisieve " + to_string(exponent);

@@ -1,4 +1,5 @@
 #include "OpenMPSieve.h"
+#include "Utils.h"
 
 #include <iostream>
 #include <ctime>
@@ -39,20 +40,25 @@ void OpenMPSieveOfEratosthenes::run(unsigned long long exponent, int threads)
 
 int OpenMPSieveOfEratosthenes::test()
 {  
-    unsigned long long n = 0;
+    unsigned long long exponent = 0;
     int threads = 0;
 
-    while(n <= 1) {
-        cout << "Exponent: ";
-        cin >> n;
+    if(Parameters::automatic) {
+        exponent = Parameters::current_exponent;
+        threads = Parameters::threads;
+    } else {
+        while(exponent <= 1) {
+            cout << "Exponent: ";
+            cin >> exponent;
+        }
+
+        while(threads <= 0 || threads > omp_get_max_threads()) {
+            cout << "Threads: ";
+            cin >> threads;
+        }
     }
 
-    while(threads <= 0 || threads > omp_get_max_threads()) {
-        cout << "Threads: ";
-        cin >> threads;
-    }
-
-    run(n, threads);
+    run(exponent, threads);
 
     return 0;
 }

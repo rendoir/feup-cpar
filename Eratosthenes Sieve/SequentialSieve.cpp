@@ -1,4 +1,5 @@
 #include "SequentialSieve.h"
+#include "Utils.h"
 
 #include <iostream>
 #include <cmath>
@@ -36,14 +37,18 @@ void SequentialSieveOfEratosthenes::run(unsigned long long exponent)
 
 int SequentialSieveOfEratosthenes::test()
 {  
-    unsigned long long n = 0;
+    unsigned long long exponent = 0;
 
-    while(n <= 1) {
-        cout << "Exponent: ";
-        cin >> n;
+    if(Parameters::automatic) {
+        exponent = Parameters::current_exponent;
+    } else {
+        while(exponent <= 1) {
+            cout << "Exponent: ";
+            cin >> exponent;
+        }
     }
 
-    run(n);
+    run(exponent);
 
     return 0;
 }
