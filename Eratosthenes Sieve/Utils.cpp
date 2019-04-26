@@ -41,5 +41,10 @@ int parseParameters(int argc, char** argv)
 }
 
 void printUsage() {
-    cout << "TODO" << endl;
+    cout << "Usage: sieve [ <algorithm>  <lower_exponent>  <upper_exponent>  { <threads> | <processes> | <threads> <processes> } ]" << endl
+         << "    algorithm:" << endl
+         << "        sequential: sequential version" << endl
+         << "        omp:        shared memory parallel version" << endl
+         << "        mpi:        distributed memory parallel version" << endl
+         << "        hybrid:     both shared and distributed memory parallel version" << endl;
 }
