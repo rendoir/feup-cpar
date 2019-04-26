@@ -2,6 +2,7 @@
 #include "Utils.h"
 
 #include <iostream>
+#include <fstream>
 #include <ctime>
 #include <omp.h>
 #include <cmath>
@@ -65,14 +66,20 @@ int OpenMPSieveOfEratosthenes::test()
 
 void OpenMPSieveOfEratosthenes::print(bool *primes, unsigned long long n, double run_time)
 {
-    unsigned long long n_primes = n >= 2 ? 1 : 0;
-    cout << (n >= 2 ? "2 " : "");
-    for (unsigned long long i=3; i<n; i+=2) {
-        if (primes[i>>1]) {
-            n_primes++;
-            cout << i << " ";
+    if(Parameters::automatic) {
+        ofstream ofs(Parameters::output_file, ofstream::app);
+        ofs << "omp" << ';' << Parameters::current_exponent << ';' << run_time << endl;
+        ofs.close();
+    } else {
+        unsigned long long n_primes = n >= 2 ? 1 : 0;
+        cout << (n >= 2 ? "2 " : "");
+        for (unsigned long long i=3; i<n; i+=2) {
+            if (primes[i>>1]) {
+                n_primes++;
+                cout << i << " ";
+            }
         }
+        cout << endl << "Found " << n_primes << " prime numbers" << endl;
+        cout << "Run time: " << run_time << " seconds" << endl;
     }
-    cout << endl << "Found " << n_primes << " prime numbers" << endl;
-    cout << "Run time: " << run_time << " seconds" << endl;
 }

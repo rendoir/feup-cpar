@@ -4,6 +4,7 @@
 #include <mpi.h>
 #include <cmath>
 #include <iostream>
+#include <fstream>
 #include <string>
 
 using namespace std;
@@ -61,34 +62,42 @@ void OpenMPISieveOfEratosthenes::run(unsigned long long exponent)
 
 void OpenMPISieveOfEratosthenes::print(bool *marking, unsigned long long block_size, int rank, int size, unsigned long long lower_bound, unsigned long long n, double run_time) 
 {
-	unsigned long long counter = 0, nr_primes = 0;
-
-	for (unsigned long long i = 0; i < block_size; i++)
-        if (marking[i])
-            counter++;
-
-	MPI_Reduce(&counter, &nr_primes, 1, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);                
-	
-	if(rank == 0) {
-		if(n>=2) {
-			nr_primes++;
-			cout << "2" << endl;
+	if(Parameters::automatic) {
+		if(rank == 0) {
+			ofstream ofs(Parameters::output_file, ofstream::app);
+			ofs << "mpi" << ';' << Parameters::current_exponent << ';' << run_time << endl;
+			ofs.close();
 		}
-	}
+    } else {	
+		unsigned long long counter = 0, nr_primes = 0;
 
-	for ( unsigned long long i = 0; i < size; ++i ) {
-		if ( rank == i ) {
-			for (unsigned long long j = 0; j < block_size; j++)
-				if(marking[j])
-					cout << j*2 + lower_bound << " ";
-			cout << endl;
+		for (unsigned long long i = 0; i < block_size; i++)
+			if (marking[i])
+				counter++;
+
+		MPI_Reduce(&counter, &nr_primes, 1, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);                
+		
+		if(rank == 0) {
+			if(n>=2) {
+				nr_primes++;
+				cout << "2" << endl;
+			}
 		}
-    	MPI_Barrier(MPI_COMM_WORLD);
-	}
 
-	if(rank == 0) {
-		cout << "Run time: " << run_time << " seconds" << endl;
-	    cout << "Found " << nr_primes << " prime numbers" << endl;
+		for ( unsigned long long i = 0; i < size; ++i ) {
+			if ( rank == i ) {
+				for (unsigned long long j = 0; j < block_size; j++)
+					if(marking[j])
+						cout << j*2 + lower_bound << " ";
+				cout << endl;
+			}
+			MPI_Barrier(MPI_COMM_WORLD);
+		}
+
+		if(rank == 0) {
+			cout << "Run time: " << run_time << " seconds" << endl;
+			cout << "Found " << nr_primes << " prime numbers" << endl;
+		}
 	}
 }
 
@@ -113,6 +122,8 @@ int OpenMPISieveOfEratosthenes::test()
     }
 
 	string command = "mpirun -np " + to_string(processes) + " mpisieve " + to_string(exponent);
+	if(Parameters::automatic)
+		command += " --auto";
 
 	return system(command.c_str());
 }

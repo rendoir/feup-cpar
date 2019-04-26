@@ -11,6 +11,7 @@ int Parameters::processes;
 int Parameters::lower_exponent;
 int Parameters::upper_exponent;
 int Parameters::current_exponent;
+std::string Parameters::output_file = "benchmarks.csv";
 
 int parseParameters(int argc, char** argv)
 {
@@ -27,11 +28,11 @@ int parseParameters(int argc, char** argv)
         Parameters::current_exponent = Parameters::lower_exponent;
     } else return -1;
 
-    if(Parameters::algorithm == "omp" && argc == 5)
+    if(Parameters::algorithm == "omp" && argc >= 5)
         Parameters::threads = stoi(argv[4]);
-    else if(Parameters::algorithm == "mpi" && argc == 5)
+    else if(Parameters::algorithm == "mpi" && argc >= 5)
         Parameters::processes = stoi(argv[4]);
-    else if(Parameters::algorithm == "hybrid" && argc == 6) {
+    else if(Parameters::algorithm == "hybrid" && argc >= 6) {
         Parameters::threads = stoi(argv[4]);
         Parameters::processes = stoi(argv[5]);
     } else if(Parameters::algorithm != "sequential")

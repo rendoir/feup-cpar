@@ -12,6 +12,7 @@ struct Parameters
     static int lower_exponent;
     static int upper_exponent;
     static int current_exponent;
+    static std::string output_file;
 };
 
 int parseParameters(int argc, char** argv);

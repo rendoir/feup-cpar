@@ -4,3 +4,4 @@ mpisieve
 hybridsieve
 .vscode
 *.class
+*.csv
