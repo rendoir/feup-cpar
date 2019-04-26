@@ -2,13 +2,14 @@
 #include "OpenMPSieve.h"
 #include "OpenMPISieve.h"
 #include "HybridSieve.h"
+#include "Utils.h"
 
 #include <iostream>
 
 using namespace std;
 
 
-void run(int argc, char** argv)
+int runManual()
 {
     unsigned int option;
 
@@ -26,31 +27,65 @@ void run(int argc, char** argv)
         switch (option)
         {
             case 0:
-                return;
+                return 0;
         
             case 1:
-                SequentialSieveOfEratosthenes::test(argc, argv);
+                SequentialSieveOfEratosthenes::test();
                 break;
 
             case 2:
-                OpenMPSieveOfEratosthenes::test(argc, argv);
+                OpenMPSieveOfEratosthenes::test();
                 break;
 
             case 3:
-                OpenMPISieveOfEratosthenes::test(argc, argv);
+                OpenMPISieveOfEratosthenes::test();
                 break;
 
             case 4:
-                HybridSieveOfEratosthenes::test(argc, argv);
+                HybridSieveOfEratosthenes::test();
                 break;
 
             default:
                 break;
         }
     }
+
+    return 0;
+}
+
+int runAuto() 
+{ 
+    cout << "AUTOOOOOOOOOOOOO" << endl;
+    while(Parameters::current_exponent <= Parameters::upper_exponent) {
+        if(Parameters::algorithm == "sequential")
+            SequentialSieveOfEratosthenes::test();
+        else if(Parameters::algorithm == "omp")
+            OpenMPSieveOfEratosthenes::test();
+        else if(Parameters::algorithm == "mpi")
+            OpenMPISieveOfEratosthenes::test();
+        else if(Parameters::algorithm == "hybrid")
+            HybridSieveOfEratosthenes::test();
+        else return -1;
+
+        Parameters::current_exponent++;
+    }
+
+    return 0;
+}
+
+int run(int argc, char *argv[])
+{
+    if(parseParameters(argc, argv) == -1) {
+        printUsage();
+        return -1;
+    }
+        
+    if(Parameters::automatic)
+        return runAuto();
+    else return runManual();
 }
 
 int main (int argc, char *argv[])
 {
-    run(argc, argv);
+    return run(argc, argv);
 }

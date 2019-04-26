@@ -11,7 +11,7 @@ class OpenMPISieveOfEratosthenes
 {
 public:
     static void run(unsigned long long exponent);
-    static int test(int argc, char** argv);
+    static int test();
     static void print(bool *marking, unsigned long long block_size, int rank, int size, unsigned long long lower_bound, unsigned long long n, double run_time);
 };
 

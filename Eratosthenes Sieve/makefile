@@ -1,4 +1,4 @@
-.PHONY: default main mpi clean
+.PHONY: default main mpi hybrid clean
 
 MPI_ENTRY := mainMPI.cpp
 MPI_SRC := OpenMPISieve.cpp
@@ -21,4 +21,4 @@ hybrid:
 	mpiCC $(FLAGS) $(HYBRID_SRC) $(HYBRID_ENTRY) -o hybridsieve -fopenmp
 
 clean:
-	rm -rf sieve mpisieve
+	rm -rf sieve mpisieve hybridsieve

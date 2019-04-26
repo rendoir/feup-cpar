@@ -95,7 +95,7 @@ void HybridSieveOfEratosthenes::print(bool *marking, unsigned long long block_si
 	}
 }
 
-int HybridSieveOfEratosthenes::test(int argc, char** argv)
+int HybridSieveOfEratosthenes::test()
 {
 	unsigned long long exponent = 0;
     int processes = 0;

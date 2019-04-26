@@ -91,7 +91,7 @@ void OpenMPISieveOfEratosthenes::print(bool *marking, unsigned long long block_s
 	}
 }
 
-int OpenMPISieveOfEratosthenes::test(int argc, char** argv)
+int OpenMPISieveOfEratosthenes::test()
 {
 	unsigned long long exponent = 0;
     int processes = 0;

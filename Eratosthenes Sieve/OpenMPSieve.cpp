@@ -37,7 +37,7 @@ void OpenMPSieveOfEratosthenes::run(unsigned long long exponent, int threads)
     delete primes;
 }
 
-int OpenMPSieveOfEratosthenes::test(int argc, char** argv)
+int OpenMPSieveOfEratosthenes::test()
 {  
     unsigned long long n = 0;
     int threads = 0;
