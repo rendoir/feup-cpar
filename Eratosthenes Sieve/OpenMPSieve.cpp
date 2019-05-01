@@ -20,7 +20,7 @@ void OpenMPSieveOfEratosthenes::run(unsigned long long exponent, int threads)
     unsigned long long k = 3;
 
     omp_set_num_threads(threads);
-    clock_t begin = clock();
+    double begin = omp_get_wtime();
 
     do {
         #pragma omp parallel for
@@ -33,7 +33,7 @@ void OpenMPSieveOfEratosthenes::run(unsigned long long exponent, int threads)
         
     } while (k*k <= n);
 
-    double run_time = (double)(clock() - begin) / CLOCKS_PER_SEC;
+    double run_time = (double)(omp_get_wtime() - begin);
     print(primes, n, run_time);
 
     delete primes;
