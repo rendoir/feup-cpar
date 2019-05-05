@@ -121,7 +121,7 @@ int OpenMPISieveOfEratosthenes::test()
 		}
     }
 
-	string command = "mpirun -np " + to_string(processes) + " mpisieve " + to_string(exponent);
+	string command = "mpirun --hostfile hostfile -np " + to_string(processes) + " mpisieve " + to_string(exponent);
 	if(Parameters::automatic)
 		command += " --auto";
 
