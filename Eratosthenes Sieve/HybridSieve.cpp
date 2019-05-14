@@ -132,7 +132,7 @@ int HybridSieveOfEratosthenes::test()
 		}
 	}
 
-	string command = "mpirun -np " + to_string(processes) + " hybridsieve " + to_string(exponent) + " " + to_string(threads);
+	string command = "mpirun --hostfile hostfile -np " + to_string(processes) + " hybridsieve " + to_string(exponent) + " " + to_string(threads);
 	if(Parameters::automatic)
 		command += " --auto";
 
